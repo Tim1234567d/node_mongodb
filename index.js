@@ -41,6 +41,13 @@ app.post("/auth/login", (req, res) => {
 })
 
 
+// ***********************************
+
+app.post("/auth/register", (req, res) => {
+
+})
+
+
 
 
 app.listen(3000,(err) => {
