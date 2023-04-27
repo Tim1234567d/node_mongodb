@@ -1,9 +1,6 @@
 import express from "express" // так мы импортируем express
 import jwt from "jsonwebtoken" // нужен для того чтобы шифровать данные в токен
 import mongoose from "mongoose" // нужен для того чтобы подключиться к mongodb, мы его специально скачали с помощью npm install mongoose
-import {registerValidation} from "./validations/auth.js" // мы импортировали нашу валидацию
-import {validationResult} from "express-validator"  // этот пакет будет проверять есть ли ошибки в веденных данных или нет
-import { resourceLimits } from "worker_threads"
 
 
 // ***********************
@@ -16,21 +13,41 @@ const app = express() // express равно app
 
 app.use(express.json()) // это нужно для того чтобы наше node.js приложение могло читать json запросы, без этого будет выходить undefined
 
+app.get("/", (req, res) => {
+  res.send("Hello world")
+})  // сделали get запрос, который в качестве ответа отправляет Hello world
+
+
+app.post("/auth/login", (req, res) => {
+    
+    console.log(req.body)  // просто чтобы посмотреть что находиться в body
+
+         // c помощью jwt.sign мы превратили данные в токен
+        const token = jwt.sign({
+            email: req.body.email,
+            password: req.body.password,
+            fullname: "John Legend"
+        },
+        "secret123", // это ключь с помощью которого мы зашивровали наши данные которые находятся в токене
+        
+        )
+    res.json({
+        success: true,
+        token,
+    })
+
+    
+
+})
 
 
 // ***********************************
 
-app.post("/auth/register",registerValidation, (req, res) => {
+app.post("/auth/register", (req, res) => {
 
-    const errors = validationResult(req)  // мы взяли validationResult из пакета validationResult
-    if(!errors.isEmpty()) {
-        return res.status(400).json(errors.array())
-    } // Если есть ошибки то верни статус 400
-
-    res.json({
-        success: true,
-  })
 })
+
+
 
 
 // ****************************************
