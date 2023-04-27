@@ -31,27 +31,48 @@ app.post("/auth/register",registerValidation, async(req, res) => {
     } // Если есть ошибки то верни статус 400
 
 
+// **************
     const password = req.body.password; // так мы вытащили пароль с body
     const salt = await bcrypt.genSalt(10) // Это алгоритм шифрования пароля, то есть каким образом должен шифроваться пароль
-    const passwordHash = await bcrypt.hash(password, salt) // таким образом мы зашифровали пароль
+    const hash = await bcrypt.hash(password, salt) // таким образом мы зашифровали пароль
 
     const doc = new UserModel({
         email: req.body.email, 
         fullName: req.body.fullName, 
         avatarUrl: req.body.avatarUrl, 
-        passwordHash,  // это зашифрованный пароль
+        passwordHash: hash,  // это зашифрованный пароль
 
     })
 
+
+// *************
     const user = await doc.save();  // таким образом мы сохранили все данные 
 
+// *************
+    const token = jwt.sign({
+        _id: user._id,
+    },
+    "secret123",
+    {
+        expiresIn: "30d",  // столько дней будет жить токен
+    }
+    )
+
+
+// **********
+
+const {passwordHash, ...userData} = user._doc  // таким образом мы скрыли отображение passwordHash в консоле, иначе бы эта информация показывалась бы в консоле вместе с другими данными
+// ***********
+    res.json({
+        ...userData,
+        token,
+    }) // как ответ вернули все данные которые сохранили
 
 
 
-    res.json(user) // как ответ вернули все данные которые сохранили
-
-
+// *************
     } catch (err) {
+        console.log(err)
         res.status(500).json({
             message: "Не удалось зарегистрироваться",
         })
@@ -60,6 +81,54 @@ app.post("/auth/register",registerValidation, async(req, res) => {
     
 })
 
+
+// ********************************
+
+app.post("/auth/login", async(req, res) => {
+    try {
+        const user = await UserModel.findOne({email: req.body.email });
+
+        if(!user) {
+            return req.status(404).json({
+                message: "Пользователь не найден",
+            })
+        }
+
+// ***********
+        const isValidPass = await bcrypt.compare(req.body.password, user._doc.passwordHash);
+
+        if (!isValidPass) {
+            return req.status(404).json({
+                message: "Неверный логин или пароль",
+            })
+        }
+
+    // **************
+        const token = jwt.sign({
+            _id: user._id,
+        },
+        "secret123",
+        {
+            expiresIn: "30d",  // столько дней будет жить токен
+        }
+        )
+
+        // ************ 
+        const {passwordHash, ...userData} = user._doc  
+     
+       res.json({
+        ...userData,
+        token,
+    }) 
+
+
+    }catch (err) {
+        console.log(err)
+        res.status(500).json({
+            message: "Не удалось авторизоваться",
+        })
+    }
+})
 
 // ****************************************
 app.listen(3000,(err) => {
