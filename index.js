@@ -70,7 +70,7 @@ const {passwordHash, ...userData} = user._doc  // таким образом мы
 
 
 
-// *************
+// ************* 
     } catch (err) {
         console.log(err)
         res.status(500).json({
