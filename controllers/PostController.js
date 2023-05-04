@@ -121,18 +121,19 @@ export const create = async (req, res) => {
       imageUrl: req.body.imageUrl,
       tags: req.body.tags.split(','),
       user: req.userId,
-    });
+    });  // Таким образом мы создаем пользователя 
 
-    const post = await doc.save();
+    const post = await doc.save(); // Таким образом мы сохраняем пользователя в mongodb
 
-    res.json(post);
+    res.json(post); // Таким образом мы возвращаем пользователя
+
   } catch (err) {
     console.log(err);
     res.status(500).json({
       message: 'Не удалось создать статью',
     });
   }
-};
+}; // Если произошла какая-либо ошибка, то верни ответ 'Не удалось создать статью'
 
 
 // ****************************************************** new part
