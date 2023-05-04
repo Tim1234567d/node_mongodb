@@ -1,6 +1,5 @@
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
-import { validationResult } from 'express-validator';
 import UserModel from "../models/User.js"
 
 export const register = async (req, res) => {
@@ -85,22 +84,23 @@ export const login = async (req, res) => {
 };
 
 export const getMe = async (req, res) => {
-  try {
-    const user = await UserModel.findById(req.userId);
-
-    if (!user) {
-      return res.status(404).json({
-        message: 'Пользователь не найден',
+    try {
+      const user = await UserModel.findById(req.userId);
+  
+      if (!user) {
+        return res.status(404).json({
+          message: 'Пользователь не найден',
+        });
+      }
+  
+      const { passwordHash, ...userData } = user._doc;
+  
+      res.json(userData);
+    } catch (err) {
+      console.log(err);
+      res.status(500).json({
+        message: 'Нет доступа',
       });
     }
-
-    const { passwordHash, ...userData } = user._doc;
-
-    res.json(userData);
-  } catch (err) {
-    console.log(err);
-    res.status(500).json({
-      message: 'Нет доступа',
-    });
-  }
-};
+  };
+  
