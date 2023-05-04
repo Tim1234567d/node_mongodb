@@ -1,4 +1,4 @@
-import jwt from 'jsonwebtoken';
+import jwt from "jsonwebtoken";
 
 export default (req, res, next) => {
   const token = (req.headers.authorization || '').replace(/Bearer\s?/, '');  // Таким образом мы удалили слова Bearer которое автоматически создается программой
@@ -19,4 +19,5 @@ export default (req, res, next) => {
       message: 'Нет доступа',
     }); // Если токена не будет то верни ответ 'Нет доступа'
   }
+
 };

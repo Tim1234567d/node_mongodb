@@ -35,7 +35,7 @@ export const getAll = async (req, res) => {
 
 
 // ****************************************************** new part
-export const getOne = async (req, res) => {
+export const getOne =  (req, res) => {
   try {
     const postId = req.params.id;
 
@@ -49,7 +49,7 @@ export const getOne = async (req, res) => {
       {
         returnDocument: 'after',
       },
-      (err, doc) => {
+      (doc, err) => {
         if (err) {
           console.log(err);
           return res.status(500).json({
@@ -66,6 +66,7 @@ export const getOne = async (req, res) => {
         res.json(doc);
       },
     ).populate('user');
+
   } catch (err) {
     console.log(err);
     res.status(500).json({
@@ -119,7 +120,7 @@ export const create = async (req, res) => {
       title: req.body.title,
       text: req.body.text,
       imageUrl: req.body.imageUrl,
-      tags: req.body.tags.split(','),
+      tags: req.body.tags,
       user: req.userId,
     });  // Таким образом мы создаем пользователя 
 

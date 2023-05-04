@@ -102,5 +102,6 @@ export const getMe = async (req, res) => {
         message: 'Нет доступа',
       });
     }
+
   };
   
