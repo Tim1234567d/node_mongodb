@@ -1,11 +1,10 @@
 import express from "express" 
 import mongoose from "mongoose" 
 import { loginValidation, registerValidation, postCreateValidation } from "./validations.js"
-import checkAuth from "./utils/checkAuth.js"
-
 import multer from "multer"
-import * as UserController from "./controllers/UserController.js"
-import * as PostController from "./controllers/PostController.js"
+import { UserController, PostController } from "./controllers/index.js"
+import {checkAuth, handleValidationErrors } from "./utils/index.js"
+
 
 // ****************************************************** new part
  mongoose.connect(
@@ -33,14 +32,14 @@ const storage = multer.diskStorage({
 
 // ***********
 app.use(express.json()) 
-app.use(cors());
+// app.use(cors());
 app.use('/uploads', express.static('uploads')); // Таким образом мы проверяем есть ли загруженные файлы в папке uploads
 
 // ****************************************************** new part
-app.post("/auth/login", loginValidation, UserController.login);
+app.post("/auth/login",  loginValidation, handleValidationErrors, UserController.login);
 
 // ****************************************************** new part
-app.post("/auth/register",registerValidation, UserController.register);
+app.post("/auth/register",  registerValidation, handleValidationErrors, UserController.register);
 
 // ****************************************************** new part
 app.get("/auth/me", checkAuth, UserController.getMe);
@@ -52,9 +51,9 @@ app.get('/tags', PostController.getLastTags);
 app.get('/posts', PostController.getAll);
 app.get('/posts/tags', PostController.getLastTags);
 app.get('/posts/:id', PostController.getOne);
-app.post('/posts', checkAuth, postCreateValidation, PostController.create)
+app.post('/posts', checkAuth, postCreateValidation, handleValidationErrors, PostController.create)
 app.delete('/posts/:id', checkAuth, PostController.remove);
-// app.patch('/posts/:id', checkAuth, postCreateValidation, handleValidationErrors, PostController.update,);
+app.patch('/posts/:id', checkAuth, postCreateValidation, handleValidationErrors, PostController.update,);
 
 
 // ****************************************************** new part
