@@ -4,6 +4,8 @@ import { loginValidation, registerValidation, postCreateValidation } from "./val
 import multer from "multer"
 import { UserController, PostController } from "./controllers/index.js"
 import {checkAuth, handleValidationErrors } from "./utils/index.js"
+import cors from "cors"; // эта библиотека нужна для того чтобы соеденить frontend и backend
+
 
 
 // ****************************************************** new part
@@ -32,7 +34,7 @@ const storage = multer.diskStorage({
 
 // ***********
 app.use(express.json()) 
-// app.use(cors());
+app.use(cors());
 app.use('/uploads', express.static('uploads')); // Таким образом мы проверяем есть ли загруженные файлы в папке uploads
 
 // ****************************************************** new part
